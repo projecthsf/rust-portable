@@ -1,0 +1,166 @@
+/* Shared chrome for the Marketplace screenshot renders.
+   Page is 1200x760; Chrome renders at device-scale 2 to give the 2400x1520 PNGs
+   that match python-portable/media/marketplace. Darcula palette throughout. */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 1200px;
+  height: 760px;
+  overflow: hidden;
+  background: #3c3f41;
+  font-family: -apple-system, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.window { width: 1200px; height: 760px; display: flex; flex-direction: column; background: #3c3f41; }
+
+/* ---- title bar ---- */
+.titlebar {
+  height: 38px; flex: none; position: relative;
+  display: flex; align-items: center;
+  background: #3c3f41; border-bottom: 1px solid #323232;
+}
+.lights { display: flex; gap: 8px; padding-left: 13px; }
+.light { width: 12px; height: 12px; border-radius: 50%; }
+.red { background: #ff5f57; } .amber { background: #febc2e; } .green { background: #28c840; }
+.title {
+  position: absolute; left: 0; right: 0; text-align: center;
+  font-size: 13px; color: #bbbbbb; pointer-events: none;
+}
+
+/* ---- body: project tree + editor ---- */
+.body { flex: 1; display: flex; min-height: 0; }
+
+.tree { width: 234px; flex: none; background: #3c3f41; padding-top: 10px; font-size: 13px; }
+.tree .hdr { color: #8c8c8c; font-size: 11px; letter-spacing: .08em; padding: 0 0 8px 14px; }
+.tree .row { display: flex; align-items: center; gap: 7px; padding: 4px 0 4px 18px; color: #bbbbbb; }
+.tree .row.sel { background: #2f65ca; color: #fff; }
+.tree .row.nest { padding-left: 36px; }
+.tree .ic { width: 15px; height: 15px; flex: none; display: flex; align-items: center; justify-content: center; font-size: 9px; }
+.ic-rs { color: #dea584; border: 1.4px solid #dea584; border-radius: 50%; font-weight: 700; font-size: 8px; }
+.ic-folder { color: #b8955f; }
+.ic-file { color: #9aa7b0; }
+
+.main { flex: 1; display: flex; flex-direction: column; min-width: 0; overflow: hidden; background: #2b2b2b; }
+
+.tabs { height: 33px; flex: none; display: flex; background: #3c3f41; }
+.tab {
+  display: flex; align-items: center; gap: 7px; padding: 0 16px;
+  background: #2b2b2b; color: #bbbbbb; font-size: 13px; border-top: 2px solid #4a88c7;
+}
+
+/* ---- editor ---- */
+.editor { flex: 1; display: flex; min-height: 0; overflow: hidden; position: relative; }
+.gutter {
+  width: 58px; flex: none; text-align: right; padding: 12px 10px 0 0;
+  color: #606366; font-family: "JetBrains Mono", "SF Mono", Menlo, monospace;
+  font-size: 13.5px; line-height: 21px; user-select: none;
+}
+.gutter .run { color: #3f9c35; }
+.code {
+  flex: 1; padding: 12px 0 0 14px; min-width: 0;
+  font-family: "JetBrains Mono", "SF Mono", Menlo, monospace;
+  font-size: 13.5px; line-height: 21px; color: #a9b7c6; white-space: pre;
+}
+
+/* Darcula token colours */
+.k  { color: #cc7832; }              /* keyword */
+.s  { color: #6a8759; }              /* string */
+.n  { color: #6897bb; }              /* number */
+.c  { color: #808080; }              /* line/block comment */
+.d  { color: #629755; font-style: italic; }  /* doc comment */
+.f  { color: #ffc66d; }              /* function declaration */
+.a  { color: #bbb529; }              /* attribute / metadata */
+.lt { color: #9876aa; }              /* lifetime */
+.t  { color: #a9b7c6; }              /* plain identifier */
+
+/* ---- status bar ---- */
+.status {
+  height: 26px; flex: none; display: flex; align-items: center; justify-content: flex-end;
+  gap: 20px; padding-right: 18px; background: #3c3f41; color: #9a9a9a; font-size: 12px;
+  border-top: 1px solid #323232;
+}
+
+/* ---- editor notification banner ---- */
+.banner {
+  display: flex; align-items: center; gap: 14px;
+  padding: 9px 16px; background: #3b4754; border-bottom: 1px solid #2f3a44;
+  font-size: 13px; color: #d6dde5;
+}
+.banner .info {
+  width: 16px; height: 16px; flex: none; border-radius: 50%;
+  background: #3592c4; color: #fff; font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+.banner .spacer { flex: 1; }
+.banner a { color: #62a0ea; text-decoration: none; margin-left: 18px; }
+
+/* ---- dialogs ---- */
+.scrim { position: absolute; inset: 0; background: rgba(0,0,0,.42); }
+.dialog {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);
+  background: #3c3f41; border: 1px solid #292b2d; border-radius: 6px;
+  box-shadow: 0 18px 54px rgba(0,0,0,.55); color: #bbbbbb; font-size: 13px;
+}
+.dialog .dh { padding: 14px 20px 10px; font-size: 14px; color: #d6d6d6; }
+.dialog .dc { padding: 4px 20px 16px; }
+.dialog .df { display: flex; justify-content: flex-end; gap: 10px; padding: 0 20px 16px; }
+.row2 { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.row2 label { width: 86px; color: #bbbbbb; text-align: right; flex: none; }
+.field {
+  flex: 1; background: #45494a; border: 1px solid #5e6060; border-radius: 3px;
+  padding: 5px 9px; color: #d6d6d6;
+}
+.combo { display: flex; align-items: center; justify-content: space-between; }
+.combo .caret { color: #9a9a9a; font-size: 10px; }
+.btn {
+  background: #4c5052; border: 1px solid #5e6060; border-radius: 3px;
+  padding: 5px 16px; color: #d6d6d6;
+}
+.btn.pri { background: #365880; border-color: #4a6f96; color: #fff; }
+.hint { color: #8c8c8c; font-size: 11.5px; margin-top: 2px; }
+
+/* ---- settings panel ---- */
+.settings { position: absolute; inset: 0; background: #3c3f41; display: flex; flex-direction: column; }
+.settings .sh { padding: 16px 22px 6px; color: #d6d6d6; font-size: 15px; }
+.settings .sb { padding: 0 22px; flex: 1; display: flex; flex-direction: column; }
+.sdesc { color: #9a9a9a; font-size: 12px; margin-bottom: 12px; }
+.list {
+  background: #2b2b2b; border: 1px solid #4f5254; border-radius: 3px;
+  padding: 6px 0; margin-bottom: 12px; min-height: 96px;
+}
+.list .li { padding: 5px 12px; color: #bbbbbb; font-size: 13px; }
+.list .li.sel { background: #2f65ca; color: #fff; }
+.btnrow { display: flex; gap: 8px; margin-bottom: 16px; }
+.sep { height: 1px; background: #4f5254; margin: 4px 0 16px; }
+.check { display: flex; align-items: center; gap: 9px; color: #bbbbbb; font-size: 13px; margin-bottom: 8px; }
+.box {
+  width: 14px; height: 14px; border-radius: 2px; background: #365880; border: 1px solid #4a6f96;
+  color: #fff; font-size: 10px; display: flex; align-items: center; justify-content: center;
+}
+
+/* ---- run console ---- */
+.console { height: 232px; flex: none; background: #2b2b2b; border-top: 1px solid #4f5254; display: flex; flex-direction: column; }
+.console .ch { display: flex; align-items: center; gap: 9px; padding: 7px 14px; color: #bbbbbb; font-size: 12px; background: #3c3f41; }
+.console .cb {
+  flex: 1; padding: 10px 14px; color: #a9b7c6; white-space: pre;
+  font-family: "JetBrains Mono", "SF Mono", Menlo, monospace; font-size: 12.5px; line-height: 19px;
+}
+.cmd { color: #6a8759; }
+.ok { color: #6a8759; }
+.dim { color: #808080; }
+
+/* ---- settings window chrome (tree on the left, Cancel/Apply/OK footer) ---- */
+.stree {
+  width: 275px; flex: none; background: #3c3f41; padding-top: 12px;
+  font-size: 13px; border-right: 1px solid #323232;
+}
+.stree .trow { display: flex; align-items: center; padding: 5px 0 5px 14px; color: #bbbbbb; }
+.stree .trow.sel { background: #2f65ca; color: #fff; }
+.stree .tw { width: 16px; flex: none; color: #9a9a9a; font-size: 9px; }
+.sfooter {
+  height: 52px; flex: none; display: flex; align-items: center; justify-content: flex-end;
+  gap: 10px; padding-right: 20px; background: #3c3f41; border-top: 1px solid #323232;
+}
+.settings { position: static; flex: 1; }
