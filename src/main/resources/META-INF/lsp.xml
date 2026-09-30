@@ -1,0 +1,22 @@
+<idea-plugin>
+    <!-- Optional Rust code-intelligence layer. Loaded only when the LSP4IJ plugin is present
+         (declared via <depends optional config-file="lsp.xml"> in plugin.xml). Registers a
+         rust-analyzer-backed language server with LSP4IJ and maps it to our RustPortable file
+         type, so it activates only where our file type owns .rs (IDEA Community, not RustRover). -->
+    <extensions defaultExtensionNs="com.redhat.devtools.lsp4ij">
+        <server
+            id="rustPortable"
+            name="Rust (Portable)"
+            factoryClass="io.genai.rust.lsp.RustLanguageServerFactory">
+            <description><![CDATA[
+                Rust completion, navigation and diagnostics via rust-analyzer, running on the
+                portable Rust toolchain. Fully local and offline.
+            ]]></description>
+        </server>
+        <!-- languageId MUST be "rust": rust-analyzer ignores files whose LSP languageId isn't
+             "rust". Our IntelliJ language id is "RustPortable" (unique, to coexist with the
+             official Rust plugin), so without this override LSP4IJ would send
+             languageId="rustportable" and rust-analyzer would reject every file. -->
+        <languageMapping language="RustPortable" serverId="rustPortable" languageId="rust"/>
+    </extensions>
+</idea-plugin>

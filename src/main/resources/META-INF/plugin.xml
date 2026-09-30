@@ -1,0 +1,119 @@
+<idea-plugin>
+    <id>io.genai.rust</id>
+    <name>Rust Portable</name>
+    <version>0.1.0</version>
+    <vendor url="https://genai.io.vn/" email="contact@genai.io.vn">GenAI</vendor>
+
+    <description><![CDATA[
+        <p><b>Write &amp; run Rust in IntelliJ IDEA Community — for free.</b> Rust Portable adds
+        lightweight Rust support to the free IDE, with <b>no RustRover license</b> and <b>no
+        system-wide Rust install</b> required. IntelliJ IDEA Community doesn't bundle the official
+        Rust plugin (that's Ultimate / RustRover / CLion only), so this fills the gap.</p>
+        <ul>
+          <li><b>Portable Rust toolchain</b> — download a toolchain from inside the IDE (like the
+              JDK downloader) using the official <code>rustup</code>. Stored under
+              <code>~/.rust-portable</code> with its own RUSTUP_HOME and CARGO_HOME, so nothing
+              touches your shell profile or an existing system Rust. Pick stable, beta, nightly
+              or a pinned release, and switch anytime.</li>
+          <li><b>Run with one click</b> — a green ▶ gutter marker on <code>fn main()</code>, plus
+              right-click ▸ Run. Inside a Cargo project it runs <code>cargo run</code> from the
+              crate root, so relative paths resolve just like they do in a terminal. A loose
+              <code>.rs</code> file with no Cargo.toml is compiled with <code>rustc</code> and
+              executed, so scratch files stay runnable.</li>
+          <li><b>Code intelligence</b> (optional) — completion, go-to-definition, hover docs and
+              error highlighting via <b>rust-analyzer</b>, the same language server RustRover runs
+              underneath, bridged with the free <b>LSP4IJ</b> plugin. One click adds it to your
+              portable toolchain as an official rustup component. Fully offline; no Node.js.</li>
+          <li><b>Syntax highlighting</b> — for <code>.rs</code> files (keywords, strings including
+              raw and byte literals, lifetimes, attributes, macros, doc comments), even without
+              the language server.</li>
+          <li><b>Run cargo tools</b> — <code>build</code> / <code>check</code> / <code>test</code>
+              / <code>add</code> / <code>fmt</code> / <code>clippy</code> in a console.</li>
+        </ul>
+        <p>Active on IDEs without built-in Rust (IDEA Community, PyCharm Community, WebStorm, …).
+        On RustRover / IDEA Ultimate / CLion the native Rust support is used instead — this plugin
+        steps aside.</p>
+    ]]></description>
+
+    <change-notes><![CDATA[
+        <b>0.1.0</b>
+        <ul>
+          <li>Initial release.</li>
+          <li>Download a portable Rust toolchain from inside the IDE via rustup (stable / beta /
+              nightly / pinned), isolated under <code>~/.rust-portable</code>.</li>
+          <li>Run a .rs file: ▶ gutter marker on <code>fn main()</code>, <code>cargo run</code>
+              from the crate root, or a rustc compile-and-run for a standalone file.</li>
+          <li>Optional rust-analyzer code intelligence via LSP4IJ (one-click setup), lexer-based
+              syntax highlighting, and a cargo build/check/test/add/fmt/clippy runner.</li>
+        </ul>
+    ]]></change-notes>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.lang</depends>
+
+    <!-- Where official Rust support exists (RustRover, or IDEA Ultimate / CLion with the Rust
+         plugin installed) we don't load at all. That lets the <fileType> below claim `.rs`
+         statically without ever racing the official plugin for the extension — see
+         ConflictingFileTypeMappingTracker, which would otherwise hand `.rs` to whichever plugin
+         registered last. -->
+    <incompatible-with>com.jetbrains.rust</incompatible-with>
+
+    <!-- Optional: Rust code intelligence (completion / navigation / errors) via LSP4IJ +
+         rust-analyzer. Loads only when LSP4IJ is installed, so the core plugin (run a .rs file,
+         highlighting, portable toolchains) stays dependency-free and works on every IDE. -->
+    <depends optional="true" config-file="lsp.xml">com.redhat.devtools.lsp4ij</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <sdkType implementation="io.genai.rust.sdk.RustSdkType"/>
+
+        <!-- File type + highlighting. `extensions=` is declared statically for two reasons:
+             .rs is recognised on first open (no startup pass needed), and JetBrains Marketplace
+             indexes this attribute — it is the ONLY input to the "plugin recommended for *.rs"
+             suggestion the IDE shows on an unknown file type. Safe to claim it because
+             <incompatible-with> above keeps us out of every IDE that has official Rust support.
+             RustLanguageActivation still binds .rs at runtime as a fallback; re-associating an
+             extension we already own is a no-op. Language id is "RustPortable" (unique). -->
+        <fileType
+            name="Rust File"
+            language="RustPortable"
+            implementationClass="io.genai.rust.lang.RustFileType"
+            fieldName="INSTANCE"
+            extensions="rs"/>
+        <lang.syntaxHighlighterFactory
+            language="RustPortable"
+            implementationClass="io.genai.rust.lang.RustSyntaxHighlighterFactory"/>
+        <lang.parserDefinition
+            language="RustPortable"
+            implementationClass="io.genai.rust.lang.RustParserDefinition"/>
+
+        <postStartupActivity implementation="io.genai.rust.lang.RustLanguageActivation"/>
+
+        <configurationType implementation="io.genai.rust.run.RustRunConfigurationType"/>
+        <runConfigurationProducer implementation="io.genai.rust.run.RustRunConfigurationProducer"/>
+        <!-- Green ▶ gutter marker next to fn main(). -->
+        <runLineMarkerContributor
+            language="RustPortable"
+            implementationClass="io.genai.rust.run.RustRunLineMarkerContributor"/>
+
+        <applicationConfigurable
+            parentId="language"
+            id="io.genai.rust.sdks"
+            displayName="Rust Portable"
+            instance="io.genai.rust.settings.RustConfigurable"/>
+
+        <editorNotificationProvider implementation="io.genai.rust.notify.RustSetupNotificationProvider"/>
+        <editorNotificationProvider implementation="io.genai.rust.notify.RustCodeIntelligenceNotificationProvider"/>
+    </extensions>
+
+    <actions>
+        <action
+            id="io.genai.rust.RunCargoTool"
+            class="io.genai.rust.tools.RunCargoToolAction"
+            text="Run Cargo Tool (Portable)…"
+            description="Run a cargo command (build / check / test / add) using the Rust Portable toolchain"
+            icon="/icons/rust.svg">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+        </action>
+    </actions>
+</idea-plugin>

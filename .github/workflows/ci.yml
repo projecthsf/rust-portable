@@ -1,0 +1,42 @@
+name: CI
+
+# Build + verify on every PR and on main. Safe to run on forks: no secrets are used and the
+# token is read-only, so an outside contribution gets the same checks without being able to
+# publish anything.
+on:
+  pull_request:
+  push:
+    branches: [main, master]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'   # Kotlin 1.9 compiler is unstable on newer JDKs; pin 17
+          cache: gradle
+
+      - name: Build plugin
+        run: ./gradlew buildPlugin --no-daemon --stacktrace
+
+      - name: Verify plugin
+        run: ./gradlew verifyPlugin --no-daemon --stacktrace
+
+      - name: Upload plugin zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: rust-portable
+          path: build/distributions/*.zip
+          if-no-files-found: error
