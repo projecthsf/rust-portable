@@ -7,3 +7,5 @@ out/
 *.log
 .DS_Store
 media/src/.render/
+__pycache__/
+*.pyc
