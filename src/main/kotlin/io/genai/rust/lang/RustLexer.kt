@@ -241,5 +241,12 @@ class RustLexer : LexerBase() {
         tokenEnd = i
     }
 
-    private fun peek(index: Int): Char = if (index < endOffset) buffer[index] else ' '
+    private fun peek(index: Int): Char = if (index in 0 until endOffset) buffer[index] else EOF
+
+    private companion object {
+        /** Sentinel for "past the end". Written as a named constant because a literal
+         *  NUL escape lands in the file as a raw NUL byte, which makes git treat this
+         *  source as binary and stop producing diffs. */
+        const val EOF = Character.MIN_VALUE
+    }
 }
